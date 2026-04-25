@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>PlayBox</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Kirang+Haerang&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* Seus estilos existentes */
+.tabela{width:100%;border-collapse:collapse;margin-top:20px}
+.tabela th{background:#f4a261;color:#fff;padding:10px}
+.tabela td{padding:10px;border-bottom:1px solid #ddd}
+.tabela tr:nth-child(even){background:#f9f9f9}
+.tabela tr:hover{background:#ffe5e5}
+.tabelo a{color:#ff4d4d;cursor:pointer;font-weight:bold}
+
+.novo-brinquedo{margin-top:10px;color:#ff4d4d;cursor:pointer}
+
+.formulario{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.formulario input,.formulario textarea,.formulario select{
+  padding:8px;border:1px solid #ccc;border-radius:5px
+}
+.btn{background:#ff4d4d;color:#fff;border:none;padding:10px;cursor:pointer;border-radius: 10px}
+
+.btn-confirmacao{background:#ff4d4d;color:#fff;border:none;padding:8px 16px;margin:0 10px;cursor:pointer;border-radius:10px}
+
+.modal{
+  display:none;position:fixed;width:100%;height:100%;
+  top:0;left:0;background:rgba(0,0,0,.4);
+  justify-content:center;align-items:center
+}
+.modal-box{
+  background:#fff;padding:20px;border-radius:8px;text-align:center
+}
+
+/* Estilos para a tela de categoria */
+.categoria-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.btn-voltar {
+  background: #f4a261;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-voltar:hover {
+  background: #e76f51;
+}
+
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.produto-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.produto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.produto-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: #f5f5f5;
+}
+
+.produto-info {
+  padding: 15px;
+}
+
+.produto-desc {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.produto-preco {
+  color: #ff4d4d;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.produto-categoria {
+  color: #888;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.produto-detalhes {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.categoria-titulo {
+  font-size: 28px;
+  color: #f4a261;
+  margin-bottom: 10px;
+}
+
+.produtos-count {
+  color: #888;
+  margin-bottom: 20px;
+}
+
+/* Modal de detalhes do produto */
+.modal-produto {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-produto-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-produto-box img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* Mensagem de produtos indisponíveis */
+.sem-produtos {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f9f9f9;
+  border-radius: 15px;
+  margin-top: 30px;
+}
+
+.sem-produtos-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.sem-produtos-texto {
+  font-size: 24px;
+  color: #ff4d4d;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.sem-produtos-subtexto {
+  color: #888;
+  font-size: 16px;
+}
+
+/* Modal para nova categoria */
+.modal-categoria {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal-categoria-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-categoria-box input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.modal-categoria-box .btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Preview da imagem da categoria */
+.imagem-preview {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.imagem-preview img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 10px;
+  border: 2px solid #f4a261;
+}
+
+/* Estilos para categorias na home */
+.categoria-home {
+  margin-bottom: 40px;
+}
+
+.categoria-home h2 {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #f4a261;
+}
+
+.cards-home {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.card-home {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.3s;
+  text-align: center;
+}
+
+.card-home:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-home-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background: #f5f5f5;
+}
+
+.card-home-content {
+  padding: 10px;
+}
+
+.card-home strong {
+  color: #333;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.card-home .preco {
+  color: #ff4d4d;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Estilos para a grid da equipe */
+.equipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+  padding: 20px 0;
+}
+
+.membro-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  text-align: center;
+  cursor: pointer;
+}
+
+.membro-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.membro-avatar {
+  width: 100%;
+  height: 250px;
+  background: linear-gradient(135deg, #f4a261, #e76f51);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.membro-avatar .emoji {
+  font-size: 80px;
+  transition: transform 0.3s;
+}
+
+.membro-card:hover .membro-avatar .emoji {
+  transform: scale(1.1);
+}
+
+.membro-info {
+  padding: 20px;
+}
+
+.membro-nome {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f4a261;
+  margin-bottom: 8px;
+}
+
+.membro-funcao {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.membro-descricao {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Cores diferentes para cada membro */
+.membro-card:nth-child(1) .membro-avatar { background: linear-gradient(135deg, #667eea, #764ba2); }
+.membro-card:nth-child(2) .membro-avatar { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.membro-card:nth-child(3) .membro-avatar { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.membro-card:nth-child(4) .membro-avatar { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.membro-card:nth-child(5) .membro-avatar { background: linear-gradient(135deg, #fa709a, #fee140); }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo"><img src="img/logoNoBg.png"></div>
+
+  <nav>
+    <h3>Menu Principal</h3>
+    <ul>
+      <li onclick="mostrar('home')">Home</li>
+      <li onclick="mostrar('catalogo')">Catálogo</li>
+      <li onclick="mostrar('adm')">Administração</li>
+      <li onclick="mostrar('sobre')">Sobre a Equipe</li>
+    </ul>
+  </nav>
+
+  <div class="logo"><img src="img/logoEquipeV.png"></div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="header">
+  <h1>PlayBox</h1>
+  <p>Complete sua brincadeira!</p>
+</div>
+
+<!-- HOME -->
+<div id="home" class="conteudo ativo">
+  <div class="conteudo-interno" id="home-conteudo">
+    <!-- As categorias serão carregadas dinamicamente aqui -->
+  </div>
+</div>
+
+<!-- CATÁLOGO -->
+<div id="catalogo" class="conteudo">
+  <div class="conteudo-interno">
+
+    <h2>Catálogo</h2>
+
+    <div class="categorias" id="categorias-lista">
+      <!-- As categorias serão carregadas dinamicamente aqui -->
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="resultado-catalogo" class="cards"></div>
+
+  </div>
+</div>
+
+<!-- TELA DE PRODUTOS POR CATEGORIA -->
+<div id="tela-categoria" class="conteudo">
+  <div class="conteudo-interno">
+    
+    <div class="categoria-header">
+      <button class="btn-voltar" onclick="voltarParaCatalogo()">
+        ← Voltar ao Catálogo
+      </button>
+    </div>
+
+    <div id="categoria-conteudo"></div>
+
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adm" class="conteudo">
+  <div class="conteudo-interno">
+
+    <h2>Administração</h2>
+
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Imagem</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Valor</th>
+          <th>Controles</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <p class="novo-brinquedo" onclick="mostrar('novo')">Novo Brinquedo</p>
+
+  </div>
+</div>
+
+<!-- NOVO -->
+<div id="novo" class="conteudo">
+  <div class="conteudo-interno">
+
+    <h2>Novo Brinquedo</h2>
+
+    <div class="formulario">
+      <input id="cod" placeholder="Código">
+      <input id="desc" placeholder="Nome">
+
+      <select id="cat"></select>
+
+      <input id="valor" placeholder="Valor (ex: 49.90)">
+
+      <input type="file" id="imgInput" accept="image/*">
+      
+      <textarea id="det" placeholder="Descrição Detalhada"></textarea>
+
+      <button class="btn" onclick="salvar()">SALVAR</button>
+      <button class="btn cancelar" onclick="mostrar('adm')">SAIR SEM SALVAR</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDITAR -->
+<div id="editar" class="conteudo">
+  <div class="conteudo-interno">
+    <h2>Editar Brinquedo</h2>
+    <div class="formulario">
+      <input id="editCod" disabled>
+      <input id="editDesc">
+      <select id="editCat"></select>
+      <input id="editValor" placeholder="Valor (ex: 49.90)">
+      <textarea id="editDet" placeholder="Descrição Detalhada"></textarea>
+      
+      <img id="editImgPreview" style="max-width: 200px; display: none;">
+      
+      <input type="file" id="editImg" accept="image/*">
+      <button class="btn" onclick="atualizar()">SALVAR EDIÇÃO</button>
+      <button class="btn" onclick="mostrar('adm')">SAIR SEM SALVAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- SOBRE -->
+<div id="sobre" class="conteudo">
+  <div class="conteudo-interno">
+    <h2>Sobre a Equipe</h2>
+    <p style="text-align: center; color: #666; margin-bottom: 20px;">Conheça os desenvolvedores do PlayBox</p>
+    
+    <div class="equipe-grid" id="equipe-grid">
+      <!-- Os membros serão carregados via JavaScript -->
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <p>Confirmar exclusão?</p>
+    <p style="color: white">.</p>
+    <button class="btn-confirmacao" onclick="confirmarExclusao()">SIM</button>
+    <button class="btn-confirmacao" onclick="fecharModal()">NÃO</button>
+  </div>
+</div>
+
+<!-- MODAL DETALHES PRODUTO -->
+<div id="modal-produto" class="modal-produto">
+  <div class="modal-produto-box">
+    <div id="modal-produto-conteudo"></div>
+    <button class="btn" onclick="fecharModalProduto()" style="margin-top: 20px;">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL NOVA CATEGORIA -->
+<div id="modal-categoria" class="modal-categoria">
+  <div class="modal-categoria-box">
+    <h3>Nova Categoria</h3>
+    <input type="text" id="novaCategoriaNome" placeholder="Digite o nome da nova categoria" maxlength="30">
+    <input type="file" id="categoriaImagem" accept="image/*" onchange="previewCategoriaImagem()">
+    <div class="imagem-preview" id="categoriaImagemPreview"></div>
+    <div class="btn-group">
+      <button class="btn" onclick="adicionarNovaCategoria()">Adicionar</button>
+      <button class="btn" onclick="fecharModalCategoria()" style="background: #535353;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Função para formatar preço em R$
+function formatarPreco(valor) {
+    if (!valor && valor !== 0) return 'R$0,00';
+    return valor.toLocaleString('pt-br', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+}
+
+let categorias = []
+let dados = []
+
+async function buscarCategorias() {
+  try {
+    const response = await fetch('http://localhost:8080/v1/categorias/');
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Erro na requisição:', error);
+  }
+}
+
+async function buscarBrinquedos() {
+  try {
+    const response = await fetch('http://localhost:8080/v1/brinquedos/');
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Erro na requisição:', error);
+  }
+}
+
+function adaptarProdutos(produtosAPI) {
+  if (!produtosAPI || !Array.isArray(produtosAPI)) {
+    console.log('Nenhum produto para adaptar');
+    return [];
+  }
+  
+  return produtosAPI.map(produto => {
+    console.log("descrição brinquedo:"+produto.descricao)
+    const produtoAdaptado = {
+      desc: produto.descricao || '',
+      cat: produto.categoria?.nome || 'Sem categoria',
+      valor: produto.preco || 0,
+      valorFormatado: formatarPreco(produto.preco || 0),
+      det: produto.descricaoDetalhada || '',
+      img: produto.imagem_base_64 ? `data:image/png;base64,${produto.imagem_base_64}` : '',
+      codigo: produto.codigo,
+      acessos: produto.acessos,
+      marca: produto.marca
+    };
+    
+    console.log('Produto adaptado:', produtoAdaptado);
+    return produtoAdaptado;
+  });
+}
+
+async function inicializar() {
+  categorias = await buscarCategorias();
+  const produtosAPI = await buscarBrinquedos();
+  dados = adaptarProdutos(produtosAPI);
+  console.log('Produtos adaptados:', dados);
+  
+  renderizarCategoriasCatalogo();
+  renderizarCategoriasSelect();
+  renderizarHome();
+  renderTabela();
+  renderizarEquipe();
+}
+
+let editIndex = null
+let deleteIndex = null
+let categoriaImagemTemp = null
+
+const membrosEquipe = [
+  { nome: "Giovanni Bruneli", funcao: "Desenvolvedor Backend / debugger", descricao: "Adição de Funcionalidades e Remoção de Bugs", emoji: "💻" },
+  { nome: "Leticia Sales", funcao: "Desenvolvedora Frontend", descricao: "Criação das interfaces e experiência do usuário", emoji: "🎨" },
+  { nome: "Mariana Diniz", funcao: "Debugger", descricao: "Remoção de Bugs", emoji: "📊" },
+  { nome: "Angelo Camara", funcao: "Data Developer", descricao: "Criação e Alimentação do Banco de Dados", emoji: "⚙️" },
+  { nome: "Matheus Junior", funcao: "Jesus", descricao: "Criador da infraestrutura principal e integração com o Banco de Dados", emoji: "🔍" }
+];
+
+function mostrar(secao){
+  document.querySelectorAll('.conteudo').forEach(c=>c.classList.remove('ativo'))
+  document.getElementById(secao).classList.add('ativo')
+}
+
+function renderizarEquipe() {
+  const container = document.getElementById('equipe-grid');
+  if(!container) return;
+  
+  container.innerHTML = '';
+  
+  membrosEquipe.forEach(membro => {
+    const membroCard = document.createElement('div');
+    membroCard.className = 'membro-card';
+    
+    membroCard.innerHTML = `
+      <div class="membro-avatar">
+        <div class="emoji">${membro.emoji}</div>
+      </div>
+      <div class="membro-info">
+        <div class="membro-nome">${membro.nome}</div>
+        <div class="membro-funcao">${membro.funcao}</div>
+        <div class="membro-descricao">${membro.descricao}</div>
+      </div>
+    `;
+    
+    container.appendChild(membroCard);
+  });
+}
+
+function previewCategoriaImagem() {
+  const file = document.getElementById('categoriaImagem').files[0];
+  const preview = document.getElementById('categoriaImagemPreview');
+  
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      categoriaImagemTemp = e.target.result;
+      preview.innerHTML = `<img src="${categoriaImagemTemp}" alt="Preview">`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.innerHTML = '';
+    categoriaImagemTemp = null;
+  }
+}
+
+async function excluirCategoria(categoriaId, categoriaNome) {
+    const produtosDaCategoria = dados.filter(item => item.cat === categoriaNome);
+    const quantidadeProdutos = produtosDaCategoria.length;
+    
+    let mensagem = `⚠️ ATENÇÃO! ⚠️\n\n`;
+    mensagem += `Você está prestes a excluir a categoria "${categoriaNome}".\n`;
+    mensagem += `Esta ação irá excluir PERMANENTEMENTE:\n`;
+    mensagem += `• A categoria "${categoriaNome}"\n`;
+    mensagem += `• ${quantidadeProdutos} produto(s) vinculado(s) a esta categoria\n\n`;
+    mensagem += `Esta ação não pode ser desfeita!\n\n`;
+    mensagem += `Deseja realmente continuar?`;
+    
+    if (confirm(mensagem)) {
+        try {
+            const response = await fetch(`http://localhost:8080/v1/categorias/${categoriaId}`, {
+                method: 'DELETE'
+            });
+            
+            const resposta = await response.text();
+            
+            if (response.ok) {
+                alert(`✅ Categoria "${categoriaNome}" e ${quantidadeProdutos} produto(s) excluídos com sucesso!`);
+                await inicializar();
+                if (document.getElementById('tela-categoria').classList.contains('ativo')) {
+                    voltarParaCatalogo();
+                }
+            } else {
+                alert(`❌ Erro ao excluir: ${resposta}`);
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('❌ Erro ao conectar com o servidor');
+        }
+    }
+}
+
+function renderizarCategoriasCatalogo() {
+    const container = document.getElementById('categorias-lista');
+    if(!container) return;
+    
+    container.innerHTML = '';
+    
+    categorias.forEach(categoria => {
+      const categoriaDiv = document.createElement('div');
+      categoriaDiv.className = 'categoria';
+      categoriaDiv.style.position = 'relative';
+      
+      categoriaDiv.innerHTML = `
+        <div style="position: relative; cursor: pointer;" onclick="abrirTelaCategoria('${categoria.nome}')">
+          <img src="data:image/png;base64,${categoria.imagem_base_64}" style="width: 150px; height: 150px; object-fit: contain;">
+          <p>${categoria.nome}</p>
+        </div>
+        <button 
+          onclick="event.stopPropagation(); excluirCategoria(${categoria.id}, '${categoria.nome}')" 
+          style="
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+          "
+          onmouseover="this.style.transform='scale(1.1)'"
+          onmouseout="this.style.transform='scale(1)'"
+        >
+          ✕
+        </button>
+      `;
+      
+      container.appendChild(categoriaDiv);
+    });
+    
+    const maisDiv = document.createElement('div');
+    maisDiv.className = 'categoria';
+    maisDiv.onclick = () => abrirModalCategoria();
+    maisDiv.innerHTML = `
+      <img src="img/mais.png">
+      <p>Mais</p>
+    `;
+    container.appendChild(maisDiv);
+}
+
+function renderizarCategoriasSelect() {
+  const selectNovo = document.getElementById('cat');
+  const selectEdit = document.getElementById('editCat');
+  
+  if(selectNovo) {
+    selectNovo.innerHTML = '';
+    categorias.forEach(cat => {
+      selectNovo.innerHTML += `<option>${cat.nome}</option>`;
+    });
+  }
+  
+  if(selectEdit) {
+    selectEdit.innerHTML = '';
+    categorias.forEach(cat => {
+      selectEdit.innerHTML += `<option>${cat.nome}</option>`;
+    });
+  }
+}
+
+function renderizarHome() {
+  const homeContainer = document.getElementById('home-conteudo');
+  if(!homeContainer) return;
+  
+  homeContainer.innerHTML = '<h2>Nossos Produtos</h2>';
+  
+  categorias.forEach(categoria => {
+    const produtosDaCategoria = dados.filter(item => item.cat === categoria.nome);
+    
+    const categoriaDiv = document.createElement('div');
+    categoriaDiv.className = 'categoria-home';
+    
+    categoriaDiv.innerHTML = `
+      <h2>${categoria.nome}</h2>
+      <div class="cards-home" id="home-${categoria.nome.replace(/\s/g, '')}">
+        ${produtosDaCategoria.length === 0 ? 
+          '<p style="color: #888; text-align: center; grid-column: 1/-1;">Nenhum produto disponível</p>' :
+          produtosDaCategoria.map((produto, idx) => {
+            const originalIndex = dados.findIndex(item => item === produto);
+            return `
+              <div class="card-home" onclick="abrirDetalhesProduto(${originalIndex})">
+                ${produto.img ? 
+                  `<img src="${produto.img}" class="card-home-img" alt="${produto.desc}">` : 
+                  `<div class="card-home-img" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+                    <span style="color: #999;">📦</span>
+                   </div>`
+                }
+                <div class="card-home-content">
+                  <strong>${produto.desc}</strong>
+                  <div class="preco">${produto.valorFormatado}</div>
+                </div>
+              </div>
+            `;
+          }).join('')
+        }
+      </div>
+    `;
+    
+    homeContainer.appendChild(categoriaDiv);
+  });
+}
+
+function abrirModalCategoria() {
+  document.getElementById('modal-categoria').style.display = 'flex';
+  document.getElementById('novaCategoriaNome').value = '';
+  document.getElementById('categoriaImagem').value = '';
+  document.getElementById('categoriaImagemPreview').innerHTML = '';
+  categoriaImagemTemp = null;
+}
+
+function fecharModalCategoria() {
+  document.getElementById('modal-categoria').style.display = 'none';
+}
+
+async function adicionarNovaCategoria() {
+  const novaCategoriaNome = document.getElementById('novaCategoriaNome').value.trim();
+  
+  if(!novaCategoriaNome) {
+    alert('Por favor, digite um nome para a categoria!');
+    return;
+  }
+  
+  if(categorias.some(cat => cat.nome === novaCategoriaNome)) {
+    alert('Esta categoria já existe!');
+    return;
+  }
+  
+  let imagemBase64 = null;
+  
+  if(categoriaImagemTemp) {
+    imagemBase64 = categoriaImagemTemp.includes('base64,') 
+      ? categoriaImagemTemp.split('base64,')[1] 
+      : categoriaImagemTemp;
+  }
+  
+  const novaCategoria = {
+    nome: novaCategoriaNome,
+    imagem_base_64: imagemBase64
+  };
+  
+  try {
+    const response = await fetch('http://localhost:8080/v1/categorias/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(novaCategoria)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const mensagem = await response.text();
+    console.log('Categoria salva:', mensagem);
+    
+    await inicializar();
+    fecharModalCategoria();
+    alert(`Categoria "${novaCategoriaNome}" adicionada com sucesso!`);
+    
+  } catch (error) {
+    console.error('Erro ao adicionar categoria:', error);
+    alert('Erro ao adicionar categoria. Tente novamente.');
+  }
+}
+
+function renderTabela() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  if(dados.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 40px;">
+          Nenhum produto cadastrado. Clique em "Novo Brinquedo" para adicionar.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  dados.forEach((item, i) => {
+    const imagemPreview = item.img ? `<img src="${item.img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">` : "Sem imagem";
+
+    tbody.innerHTML += `
+    <tr>
+      <td>${imagemPreview}</td>
+      <td>${item.desc}</td>
+      <td>${item.cat}</td>
+      <td>${item.valorFormatado}</td>
+      <td>
+        <a onclick="editar(${i})">Editar</a> -
+        <a onclick="abrirModal(${i})">Excluir</a>
+       </td>
+    </tr>`;
+  });
+}
+
+function abrirTelaCategoria(categoria) {
+  mostrar('tela-categoria');
+  
+  const produtosFiltrados = dados.filter(item => item.cat === categoria);
+  const categoriaConteudo = document.getElementById('categoria-conteudo');
+  
+  if(produtosFiltrados.length === 0) {
+    categoriaConteudo.innerHTML = `
+      <h2 class="categoria-titulo">${categoria}</h2>
+      <div class="sem-produtos">
+        <div class="sem-produtos-icon">😢</div>
+        <div class="sem-produtos-texto">Produtos Indisponíveis :(</div>
+        <div class="sem-produtos-subtexto">Não há produtos cadastrados nesta categoria no momento.</div>
+        <button class="btn" onclick="voltarParaCatalogo()" style="margin-top: 20px;">Voltar ao Catálogo</button>
+      </div>
+    `;
+  } else {
+    categoriaConteudo.innerHTML = `
+      <h2 class="categoria-titulo">${categoria}</h2>
+      <p class="produtos-count">${produtosFiltrados.length} produto(s) encontrado(s)</p>
+      
+      <div class="produtos-grid">
+        ${produtosFiltrados.map((produto, index) => {
+          const originalIndex = dados.findIndex(item => item === produto);
+          return `
+            <div class="produto-card" onclick="abrirDetalhesProduto(${originalIndex})">
+              <div class="produto-img" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                ${produto.img ? 
+                  `<img src="${produto.img}" class="produto-img" style="object-fit: cover;">` : 
+                  `<span style="color: #999;">📦 Sem imagem</span>`
+                }
+              </div>
+              <div class="produto-info">
+                <div class="produto-desc">${produto.desc}</div>
+                <div class="produto-preco">${produto.valorFormatado}</div>
+                <div class="produto-categoria">${produto.cat}</div>
+                ${produto.det ? `<div class="produto-detalhes">${produto.det.substring(0, 80)}${produto.det.length > 80 ? '...' : ''}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+}
+
+function voltarParaCatalogo() {
+  mostrar('catalogo');
+}
+
+function abrirDetalhesProduto(index) {
+  const produto = dados[index];
+  const modalProduto = document.getElementById('modal-produto');
+  const modalConteudo = document.getElementById('modal-produto-conteudo');
+  
+  modalConteudo.innerHTML = `
+    ${produto.img ? `<img src="${produto.img}" alt="${produto.desc}">` : '<div style="background: #f0f0f0; height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">📦 Sem imagem</div>'}
+    <h3 style="color: #f4a261; margin-bottom: 10px;">${produto.desc}</h3>
+    <p><strong>Categoria:</strong> ${produto.cat}</p>
+    <p><strong>Preço:</strong> <span style="color: #ff4d4d; font-size: 24px; font-weight: bold;">${produto.valorFormatado}</span></p>
+    ${produto.det ? `<p><strong>Detalhes:</strong><br>${produto.det}</p>` : ''}
+  `;
+  
+  modalProduto.style.display = 'flex';
+}
+
+function fecharModalProduto() {
+  document.getElementById('modal-produto').style.display = 'none';
+}
+
+async function salvar() {
+  const codigo = document.getElementById('cod').value;
+  const descricao = document.getElementById('desc').value;
+  const categoriaNome = document.getElementById('cat').value;
+  const preco = parseFloat(document.getElementById('valor').value);
+  const descricaoDetalhada = document.getElementById('det').value;
+  const marca = "";
+  const imgFile = document.getElementById('imgInput').files[0];
+  
+  if (!codigo) {
+    alert('Por favor, preencha o código do brinquedo!');
+    return;
+  }
+  if (!descricao) {
+    alert('Por favor, preencha a descrição do brinquedo!');
+    return;
+  }
+  if (!categoriaNome) {
+    alert('Por favor, selecione uma categoria!');
+    return;
+  }
+  if (!preco || preco <= 0) {
+    alert('Por favor, preencha um preço válido!');
+    return;
+  }
+  if (!imgFile) {
+    alert('Por favor, selecione uma imagem para o brinquedo!');
+    return;
+  }
+  
+  const categoria = categorias.find(cat => cat.nome === categoriaNome);
+  if (!categoria) {
+    alert('Categoria não encontrada!');
+    return;
+  }
+  
+  const reader = new FileReader();
+  
+  reader.onload = async function(e) {
+    let imagemBase64 = e.target.result;
+    if (imagemBase64.includes('base64,')) {
+      imagemBase64 = imagemBase64.split('base64,')[1];
+    }
+    
+    const brinquedoDTO = {
+      codigo: codigo,
+      descricao: descricao,
+      descricao_detalhada: descricaoDetalhada || "",
+      preco: preco,
+      marca: marca,
+      imagem_base_64: imagemBase64,
+      id_categoria: categoria.id
+    };
+    
+    console.log('Enviando brinquedo:', brinquedoDTO);
+    
+    try {
+      const response = await fetch('http://localhost:8080/v1/brinquedos/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(brinquedoDTO)
+      });
+      
+      const resposta = await response.text();
+      console.log('Resposta do servidor:', resposta);
+      
+      if (response.ok) {
+        alert('Brinquedo salvo com sucesso!');
+        limparFormulario();
+        await inicializar();
+        mostrar('adm');
+      } else {
+        alert(`Erro ao salvar: ${resposta}`);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      alert('Erro ao conectar com o servidor');
+    }
+  };
+  
+  reader.readAsDataURL(imgFile);
+}
+
+function limparFormulario() {
+  document.getElementById('desc').value = '';
+  document.getElementById('valor').value = '';
+  document.getElementById('det').value = '';
+  document.getElementById('imgInput').value = '';
+}
+
+function editar(i) {
+  editIndex = i;
+  let d = dados[i];
+
+  document.getElementById('editCod').value = d.codigo;
+  document.getElementById('editDesc').value = d.desc;
+  document.getElementById('editCat').value = d.cat;
+  document.getElementById('editValor').value = d.valor;
+  document.getElementById('editDet').value = d.det;
+  
+  const preview = document.getElementById('editImgPreview');
+  if (d.img && d.img !== '') {
+    preview.src = d.img;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+
+  mostrar('editar');
+}
+
+async function atualizar() {
+  const codigoInput = document.getElementById('editCod').value;
+  const descricao = document.getElementById('editDesc').value;
+  const categoriaNome = document.getElementById('editCat').value;
+  const preco = parseFloat(document.getElementById('editValor').value);
+  const descricaoDetalhada = document.getElementById('editDet').value;
+  const marca = "";
+  const imgFile = document.getElementById('editImg').files[0];
+  
+  if (!codigoInput) {
+    alert('Por favor, preencha o código do brinquedo!');
+    return;
+  }
+  if (!descricao) {
+    alert('Por favor, preencha a descrição do brinquedo!');
+    return;
+  }
+  if (!categoriaNome) {
+    alert('Por favor, selecione uma categoria!');
+    return;
+  }
+  if (!preco || preco <= 0) {
+    alert('Por favor, preencha um preço válido!');
+    return;
+  }
+
+  const categoria = categorias.find(cat => cat.nome === categoriaNome);
+  if (!categoria) {
+    alert('Categoria não encontrada!');
+    return;
+  }
+  
+  const codigo = codigoInput;
+  
+  const enviarAtualizacao = async (imagemBase64) => {
+    const brinquedoDTO = {
+      codigo: parseInt(codigo),
+      descricao: descricao,
+      descricao_detalhada: descricaoDetalhada || "",
+      preco: preco,
+      marca: marca,
+      imagem_base_64: imagemBase64,
+      id_categoria: categoria.id
+    };
+    
+    console.log('Enviando atualização:', brinquedoDTO);
+    
+    try {
+      const response = await fetch(`http://localhost:8080/v1/brinquedos/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(brinquedoDTO)
+      });
+      
+      const resposta = await response.text();
+      console.log('Resposta do servidor:', resposta);
+      
+      if (response.ok) {
+        alert('Brinquedo atualizado com sucesso!');
+        await inicializar();
+        mostrar('adm');
+      } else {
+        alert(`Erro ao atualizar: ${resposta}`);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      alert('Erro ao conectar com o servidor');
+    }
+  };
+  
+  if (imgFile) {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      let imagemBase64 = e.target.result;
+      if (imagemBase64.includes('base64,')) {
+        imagemBase64 = imagemBase64.split('base64,')[1];
+      }
+      await enviarAtualizacao(imagemBase64);
+    };
+    reader.readAsDataURL(imgFile);
+  } else {
+    let imagemExistente = dados[editIndex]?.img;
+    if (imagemExistente && imagemExistente.includes('base64,')) {
+      imagemExistente = imagemExistente.split('base64,')[1];
+    }
+    await enviarAtualizacao(imagemExistente);
+  }
+}
+
+function abrirModal(i){
+  deleteIndex = i;
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function fecharModal(){
+  document.getElementById('modal').style.display = 'none';
+}
+
+async function confirmarExclusao() {
+  if (deleteIndex !== null) {
+    const produto = dados[deleteIndex];
+    try {
+      const response = await fetch(`http://localhost:8080/v1/brinquedos/`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ codigo: produto.codigo })
+      });
+      
+      const resposta = await response.text();
+      
+      if (response.ok) {
+        alert('Brinquedo excluído com sucesso!');
+        fecharModal();
+        await inicializar();
+      } else {
+        alert(`Erro ao excluir: ${resposta}`);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      alert('Erro ao conectar com o servidor');
+    }
+  }
+}
+
+window.onclick = function(event) {
+  const modalProduto = document.getElementById('modal-produto');
+  const modalCategoria = document.getElementById('modal-categoria');
+  const modalConfirmacao = document.getElementById('modal');
+  if (event.target === modalProduto) {
+    modalProduto.style.display = 'none';
+  }
+  if (event.target === modalCategoria) {
+    modalCategoria.style.display = 'none';
+  }
+  if (event.target === modalConfirmacao) {
+    modalConfirmacao.style.display = 'none';
+  }
+}
+
+inicializar()
+</script>
+
+</body>
+</html>

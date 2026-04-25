@@ -1,0 +1,90 @@
+package br.com.example.toycatalog.dto;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+public class BrinquedoRequestDTO {
+    
+    @NotNull(message = "Código é obrigatório")
+    @Positive(message = "Código deve ser positivo")
+    @Min(value = 1, message = "Código deve ser diferente de zero")
+    private Integer codigo;
+    
+    @NotBlank(message = "Descrição é obrigatória")
+    private String descricao;
+    
+    private String descricao_detalhada;  // OK - não tem @NotBlank
+    
+    @NotNull(message = "Preço é obrigatório")
+    @DecimalMin(value = "0.01", message = "Preço deve ser maior que zero")
+    private Float preco;
+
+    private String marca;
+    
+    @NotNull(message = "Imagem é obrigatória")
+    private String imagem_base_64;
+    
+    @NotNull(message = "ID da categoria é obrigatório")
+    @Positive(message = "ID da categoria inválido")
+    private Integer id_categoria;
+    
+    // Getters e Setters
+    public Integer getCodigo() {
+        return codigo;
+    }
+    
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+    
+    public String getDescricao() {
+        return descricao;
+    }
+    
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+    
+    public String getDescricao_detalhada() {
+        return descricao_detalhada;
+    }
+    
+    public void setDescricao_detalhada(String descricao_detalhada) {
+        this.descricao_detalhada = descricao_detalhada;
+    }
+    
+    public Float getPreco() {
+        return preco;
+    }
+    
+    public void setPreco(Float preco) {
+        this.preco = preco;
+    }
+    
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getImagem_base_64() {
+        return imagem_base_64;
+    }
+    
+    public void setImagem_base_64(String imagem_base_64) {
+        this.imagem_base_64 = imagem_base_64;
+    }
+    
+    public Integer getId_categoria() {
+        return id_categoria;
+    }
+    
+    public void setId_categoria(Integer id_categoria) {
+        this.id_categoria = id_categoria;
+    }
+}
