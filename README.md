@@ -1,5 +1,5 @@
-🧸 ToyCatalog
-ToyCatalog é um catálogo digital interativo de brinquedos, desenvolvido para organizar e exibir coleções de forma visual e prática.
+🧸 PlayBox
+O Projeto Playbox é um catálogo digital interativo de brinquedos, desenvolvido para organizar e exibir coleções de forma visual e prática.
 
 ✨ Funcionalidades
 📋 Listagem organizada de brinquedos
